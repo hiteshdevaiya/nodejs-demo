@@ -1,18 +1,29 @@
-var express = require('express');
-var app = express();
-var mongoose = require('mongoose');
-var config = require('./config');
-var setupController = require('./controllers/setupController');
-var apiController = require('./controllers/apiController');
+'use strict';
 
-var port = process.env.PORT || 3000;
+let express = require('express');
 
-app.use('/assets', express.static(__dirname + '/public'));
+require('dotenv').config();
+let app = express();
+let bodyParser = require('body-parser');
+let expressValidator = require('express-validator');
+// let mongoose = require('mongoose');
 
-app.set('view engine', 'ejs');
+// let Promise = require('bluebird');
+let compression = require('compression');
+// mongoose.Promise = Promise;
+// mongoose.connect(process.env.DATABASE_URI);
 
-mongoose.connect(config.getDbConnectionString());
-setupController(app);
-apiController(app);
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(compression());
+// app.use(expressValidator());
 
-app.listen(port);
+// var swaggerUi = require('swagger-ui-express'),
+// swaggerDocument = require('./swagger.json');
+
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+
+require('./routes.js')(app);
+app.listen(process.env.SERVER_PORT);
+console.log(`${process.env.PROJECT_NAME} START ON:>> ${process.env.SERVER_PORT}`);
